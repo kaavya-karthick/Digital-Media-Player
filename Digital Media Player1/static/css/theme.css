@@ -1,0 +1,110 @@
+* {
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #6667AB, #7B337E, #420D4B);
+    color: #fff;
+    min-height: 100vh;
+}
+
+.center-page {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar {
+    height: 80px;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a, .logout a {
+    color: white;
+    text-decoration: none;
+}
+
+.container {
+    padding: 30px;
+}
+
+.card {
+    background: rgba(255,255,255,0.12);
+    padding: 30px;
+    border-radius: 16px;
+    width: 320px;
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #F5D5E0;
+    color: #210635;
+    border-radius: 10px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.error {
+    color: #ffb3b3;
+}
+
+/* ===== LANDING PAGE FIX ===== */
+
+.landing-wrapper {
+    position: fixed;
+    inset: 0;                 /* top:0 left:0 right:0 bottom:0 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #6a5acd, #8e44ad);
+    z-index: 1;
+}
+
+.landing-card {
+    text-align: center;
+    color: white;
+}
+
+.landing-card h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.landing-card .tagline {
+    font-size: 18px;
+    opacity: 0.9;
+    margin-bottom: 25px;
+}
+
+.landing-card .btn {
+    padding: 12px 28px;
+    background: white;
+    color: #6a5acd;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+}

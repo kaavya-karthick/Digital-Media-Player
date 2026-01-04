@@ -1,0 +1,10 @@
+.fav-page {
+    padding: 40px;
+}
+
+.fav-item {
+    background: rgba(255,255,255,0.12);
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}

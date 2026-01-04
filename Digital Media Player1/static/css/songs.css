@@ -1,0 +1,21 @@
+.songs-page {
+    max-width: 600px;
+    margin: auto;
+}
+
+.song-list {
+    list-style: none;
+    padding: 0;
+}
+
+.song-item {
+    background: rgba(255,255,255,0.12);
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+.song-heart {
+    cursor: pointer;
+}

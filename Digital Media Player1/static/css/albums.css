@@ -1,0 +1,24 @@
+.albums-page {
+    padding: 40px;
+}
+
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+}
+
+.album-card {
+    background: rgba(255,255,255,0.15);
+    padding: 16px;
+    border-radius: 14px;
+    text-align: center;
+}
+
+.album-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}

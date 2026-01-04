@@ -1,0 +1,79 @@
+.player-container {
+    width: 85%;
+    max-width: 900px;   /* 🔥 smaller like sir example */
+    margin: 35px auto;
+    padding: 25px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subtitle {
+    margin: 10px 0 25px;
+    opacity: 0.8;
+}
+
+/* WAVE PLACE */
+.wave-box {
+    height: 80px;              /* 🔥 smaller */
+    border-radius: 12px;
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* CONTROLS */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 20px;
+}
+
+.controls button {
+    font-size: 28px;
+    border: none;
+    background: none;
+    color: white;
+    cursor: pointer;
+}
+
+/* PROGRESS */
+.progress-row,
+.volume-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.progress-row input {
+    flex: 4;        /* 🔥 long time bar */
+}
+
+.volume-row input {
+    flex: 1.5;      /* 🔥 short volume bar */
+}
+
+.volume-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    max-width: 400px;   /* 🔥 not full width */
+}
+
+/* UPLOAD */
+.upload-box {
+    margin-top: 20px;
+}
