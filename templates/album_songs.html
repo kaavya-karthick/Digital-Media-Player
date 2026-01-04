@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/songs.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<a href="/albums" style="color:white;">⬅ Back to Albums</a>
+
+<div style="margin-top:20px;">
+    <h2>📁 {{ album.name }}</h2>
+
+    {% if album.image_path %}
+        <img src="{{ album.image_path }}"
+             style="width:160px;border-radius:12px;margin-bottom:20px;">
+    {% endif %}
+</div>
+
+<div class="song-list" id="songList">
+    {% if songs %}
+        {% for song in songs %}
+            <div class="song-row"
+                 data-id="{{ song.id }}"
+                 data-title="{{ song.title }}"
+                 style="margin:15px 0; display:flex; align-items:center;">
+
+                <a href="/play/{{ song.id }}"
+                   class="play-link"
+                   style="color:white; text-decoration:none; flex:1;">
+                    🎵 {{ song.title }}
+                </a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No songs in this album</p>
+    {% endif %}
+</div>
+
+<script>
+/* ---------------- ALBUM PLAYLIST BUILD ---------------- */
+const rows = document.querySelectorAll(".song-row");
+let playlist = [];
+
+rows.forEach((row, index) => {
+    playlist.push({
+        id: row.dataset.id,
+        title: row.dataset.title
+    });
+
+    row.querySelector(".play-link").addEventListener("click", () => {
+        localStorage.setItem("playlist", JSON.stringify(playlist));
+        localStorage.setItem("currentIndex", index);
+    });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/albums.css') }}">
+{% endblock %}
+
+{% block content %}
+<h2>📁 Albums</h2>
+
+<div class="albums">
+    {% if albums %}
+        {% for album in albums %}
+            <a href="/albums/{{ album.id }}" class="album-card">
+                <img src="{{ album.image_path or url_for('static', filename='media/default.png') }}">
+                <p>{{ album.name }}</p>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p>No albums</p>
+    {% endif %}
+</div>
+{% endblock %}

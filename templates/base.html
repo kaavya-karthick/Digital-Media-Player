@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Digital Media Player</title>
+
+    <!-- Global Theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+
+    {% block css %}{% endblock %}
+</head>
+<body>
+
+    <!-- NAVBAR ONLY FOR LOGGED-IN USERS -->
+    {% if session.get("user_id") %}
+    <nav class="navbar">
+        <div class="logo">🎧 Digital Media Player</div>
+
+        <ul class="nav-links">
+            <li><a href="/home">Home</a></li>
+            <li><a href="/songs">Songs</a></li>
+            <li><a href="/albums">Albums</a></li>
+            <li><a href="/favourites">❤️ Favourites</a></li>
+        </ul>
+
+        <div class="logout">
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+    {% endif %}
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>

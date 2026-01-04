@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 style="color:white;">🎶 Songs</h2>
+
+<div class="song-list" id="songList">
+    {% if songs %}
+        {% for song in songs %}
+            <div class="song-row"
+                 data-id="{{ song['id'] }}"
+                 data-title="{{ song['title'] }}"
+                 style="margin:15px 0; display:flex; align-items:center;">
+
+                <!-- PLAY SONG -->
+                <a href="/play/{{ song['id'] }}"
+                   class="play-link"
+                   style="color:white; font-size:18px; text-decoration:none; flex:1;">
+                    🎵 {{ song['title'] }}
+                </a>
+
+                <!-- HEART -->
+                <span
+                  onclick="toggleFav({{ song['id'] }})"
+                  style="cursor:pointer; font-size:20px;">
+                  🤍
+                </span>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color:white;">No songs found</p>
+    {% endif %}
+</div>
+
+<script>
+/* ==================================================
+   BUILD FULL PLAYLIST FOR NEXT / PREV
+   ================================================== */
+
+const rows = document.querySelectorAll(".song-row");
+let playlist = [];
+
+rows.forEach((row, index) => {
+    playlist.push({
+        id: row.dataset.id,
+        title: row.dataset.title
+    });
+
+    row.querySelector(".play-link").addEventListener("click", () => {
+        localStorage.setItem("playlist", JSON.stringify(playlist));
+        localStorage.setItem("currentIndex", index);
+    });
+});
+
+/* ---------- FAVOURITE ---------- */
+function toggleFav(songId) {
+    fetch(`/toggle-favourite/${songId}`)
+        .then(() => location.reload());
+}
+</script>
+{% endblock %}

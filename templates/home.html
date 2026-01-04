@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/player.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="player-container">
+
+    <div class="player-header">
+        <h1>🎵 Music Player</h1>
+    </div>
+
+    <p class="subtitle">Select a song from Songs page</p>
+
+    <!-- SONG TITLE + HEART -->
+    <div class="wave-box">
+        <span id="songTitle">
+            {% if selected_song %}
+                {{ selected_song[1] }}
+            {% else %}
+                No song selected
+            {% endif %}
+        </span>
+
+        {% if selected_song %}
+        <span id="favHeart"
+              data-song-id="{{ selected_song[0] }}"
+              style="cursor:pointer;font-size:22px;">🤍</span>
+        {% endif %}
+    </div>
+
+    <!-- 🌙 MOON-TONE ABSTRACT FLOWING WAVE -->
+    <canvas id="waveformCanvas"
+            style="width:100%;height:120px;margin:16px 0;"></canvas>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+        <button id="prevBtn">⏮</button>
+        <button id="playBtn">▶</button>
+        <button id="nextBtn">⏭</button>
+        <!-- 🔁 LOOP BUTTON (ONLY NEW ADDITION) -->
+        <button id="loopBtn" title="Loop Song">🔁</button>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-row">
+        <span id="currentTime">0:00</span>
+        <input type="range" id="progressBar" value="0">
+        <span id="duration">0:00</span>
+    </div>
+
+    <!-- VOLUME -->
+    <div class="volume-row">
+        <span>🔈</span>
+        <input type="range" id="volumeBar" min="0" max="1" step="0.01" value="1">
+        <span>🔊</span>
+    </div>
+
+    <!-- UPLOAD -->
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="song_file" accept="audio/*" required>
+        <button type="submit">Save & Play</button>
+    </form>
+
+    <!-- AUDIO -->
+    {% if selected_song %}
+    <audio id="audioPlayer" src="{{ url_for('static', filename=selected_song[2]) }}"></audio>
+    {% else %}
+    <audio id="audioPlayer"></audio>
+    {% endif %}
+
+</div>
+
+<script>
+/* ---------------- ELEMENTS ---------------- */
+const audio = document.getElementById("audioPlayer");
+const playBtn = document.getElementById("playBtn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const favHeart = document.getElementById("favHeart");
+const loopBtn = document.getElementById("loopBtn");   // 🔁 NEW
+
+const progressBar = document.getElementById("progressBar");
+const volumeBar = document.getElementById("volumeBar");
+const currentTimeEl = document.getElementById("currentTime");
+const durationEl = document.getElementById("duration");
+
+/* ---------------- PLAYLIST ---------------- */
+let playlist = JSON.parse(localStorage.getItem("playlist")) || [];
+let currentIndex = parseInt(localStorage.getItem("currentIndex"));
+
+/* ---------------- AUTO PLAY ---------------- */
+if (audio.src) {
+    audio.play();
+    playBtn.textContent = "⏸";
+}
+
+/* ---------------- PLAY / PAUSE ---------------- */
+playBtn.onclick = () => {
+    if (audio.paused) {
+        audio.play();
+        playBtn.textContent = "⏸";
+    } else {
+        audio.pause();
+        playBtn.textContent = "▶";
+    }
+};
+
+/* ---------------- NEXT / PREV ---------------- */
+prevBtn.onclick = () => {
+    if (playlist.length && currentIndex > 0) {
+        currentIndex--;
+        localStorage.setItem("currentIndex", currentIndex);
+        window.location.href = `/play/${playlist[currentIndex].id}`;
+    }
+};
+
+nextBtn.onclick = playNextSong;
+
+function playNextSong() {
+    if (!playlist.length) return;
+
+    if (currentIndex < playlist.length - 1) {
+        currentIndex++;
+    } else {
+        currentIndex = 0;
+    }
+
+    localStorage.setItem("currentIndex", currentIndex);
+    window.location.href = `/play/${playlist[currentIndex].id}`;
+}
+
+/* =====================================================
+   🔁 SINGLE SONG LOOP (ONLY FEATURE ADDED)
+   ===================================================== */
+let loopEnabled = false;
+loopBtn.style.opacity = "0.4";
+
+loopBtn.onclick = () => {
+    loopEnabled = !loopEnabled;
+    audio.loop = loopEnabled;
+    loopBtn.style.opacity = loopEnabled ? "1" : "0.4";
+};
+
+audio.onended = () => {
+    if (loopEnabled) {
+        audio.currentTime = 0;
+        audio.play();
+    } else {
+        playNextSong();
+    }
+};
+
+/* ---------------- META ---------------- */
+audio.onloadedmetadata = () => {
+    progressBar.max = Math.floor(audio.duration);
+    durationEl.textContent = formatTime(audio.duration);
+};
+
+/* ---------------- TIME ---------------- */
+audio.ontimeupdate = () => {
+    progressBar.value = Math.floor(audio.currentTime);
+    currentTimeEl.textContent = formatTime(audio.currentTime);
+};
+
+/* ---------------- SEEK ---------------- */
+progressBar.oninput = () => {
+    audio.currentTime = progressBar.value;
+};
+
+/* ---------------- VOLUME ---------------- */
+volumeBar.oninput = () => {
+    audio.volume = volumeBar.value;
+};
+
+/* ---------------- ❤️ FAVOURITES ---------------- */
+favHeart.onclick = () => {
+    if (!audio.src) return;
+
+    const songId = "{{ selected_song[0] if selected_song else '' }}";
+    if (!songId) return;
+
+    fetch(`/toggle-favourite/${songId}`)
+        .then(() => {
+            favHeart.textContent =
+                favHeart.textContent === "❤️" ? "🤍" : "❤️";
+        });
+};
+
+/* ---------------- TIME FORMAT ---------------- */
+function formatTime(sec) {
+    let m = Math.floor(sec / 60);
+    let s = Math.floor(sec % 60);
+    return `${m}:${s < 10 ? "0" + s : s}`;
+}
+
+/* =====================================================
+   🌙 MOON-TONE CENTER-FLOWING ABSTRACT WAVE
+   (UNCHANGED)
+   ===================================================== */
+const canvas = document.getElementById("waveformCanvas");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const source = audioCtx.createMediaElementSource(audio);
+const analyser = audioCtx.createAnalyser();
+
+analyser.fftSize = 512;
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+
+source.connect(analyser);
+analyser.connect(audioCtx.destination);
+
+let phase = 0;
+
+function drawMoonWave() {
+    requestAnimationFrame(drawMoonWave);
+
+    analyser.getByteFrequencyData(dataArray);
+
+    let energy = 0;
+    for (let i = 0; i < bufferLength; i++) {
+        energy += dataArray[i];
+    }
+    energy = energy / bufferLength / 255;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const centerY = canvas.height / 2;
+    const layers = 14;
+    const points = 220;
+
+    for (let l = 0; l < layers; l++) {
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = `rgba(180,210,255,${0.04 + l * 0.045})`;
+
+        for (let i = 0; i <= points; i++) {
+            const x = (i / points) * canvas.width;
+            const sine =
+                Math.sin(i * 0.08 + phase + l * 0.35);
+
+            const y =
+                centerY +
+                sine *
+                (30 + energy * 90) +
+                (l - layers / 2) * 5;
+
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+
+        ctx.stroke();
+    }
+
+    phase += 0.015;
+}
+
+audio.onplay = () => {
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    drawMoonWave();
+};
+</script>
+
+{% endblock %}

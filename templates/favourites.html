@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/favourites.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<h2>❤️ Favourites</h2>
+
+{% if songs %}
+<ul class="song-list">
+    {% for song in songs %}
+    <li class="song-item">
+        <span
+            style="cursor:pointer"
+            onclick="window.location.href='/play/{{ song.id }}'">
+            🎵 {{ song.title }}
+        </span>
+
+        <a href="/toggle-favourite/{{ song.id }}"
+           style="margin-left:12px;text-decoration:none;">
+            ❤️
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No favourites yet ❤️</p>
+{% endif %}
+
+{% endblock %}
